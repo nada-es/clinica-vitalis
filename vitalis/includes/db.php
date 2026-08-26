@@ -2,17 +2,27 @@
 /**
  * Conexión a la base de datos MySQL
  * Clínica Vitalis - Trabajo Final PHP
- *
- * IMPORTANTE: si subes el proyecto a un hosting, cambia estos datos
- * por los que te facilite tu proveedor (cPanel, InfinityFree, etc.)
  */
 
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'clinica_vitalis');
+// Railway provide database URL as env var, fall back to localhost for local dev
+$dbUrl = getenv('DATABASE_URL') ?: getenv('MYSQL_URL') ?: '';
 
-$conexion = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+if ($dbUrl) {
+    $parts = parse_url($dbUrl);
+    $dbHost = $parts['host'] ?? 'localhost';
+    $dbUser = $parts['user'] ?? '';
+    $dbPass = $parts['pass'] ?? '';
+    $dbName = ltrim($parts['path'] ?? '', '/');
+    $dbPort = $parts['port'] ?? 3306;
+} else {
+    $dbHost = getenv('DB_HOST') ?: 'localhost';
+    $dbUser = getenv('DB_USER') ?: 'root';
+    $dbPass = getenv('DB_PASS') ?: '';
+    $dbName = getenv('DB_NAME') ?: 'clinica_vitalis';
+    $dbPort = getenv('DB_PORT') ?: 3306;
+}
+
+$conexion = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName, (int) $dbPort);
 
 if (!$conexion) {
     die('Error de conexión con la base de datos: ' . mysqli_connect_error());
