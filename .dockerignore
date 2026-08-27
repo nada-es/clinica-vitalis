@@ -1,0 +1,7 @@
+git
+.github
+*.md
+Procfile
+composer.json
+composer.lock
+vitalis/database-fixed.sql
