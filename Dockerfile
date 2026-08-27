@@ -1,22 +1,14 @@
 FROM php:8.3-apache
 
-# Disable conflicting MPM modules
-RUN a2dismod mpm_prefork mpm_worker mpm_event 2>/dev/null || true
-
-# Install MySQLi extension
 RUN docker-php-ext-install mysqli
 
-# Enable mpm_prefork explicitly
-RUN a2enmod mpm_prefork
+RUN sed -i 's/^LoadModule mpm_event_module/LoadModule mpm_prefork_module/' /etc/apache2/mods-available/mpm.conf \
+    && sed -i '/<IfModule mpm_event_module>/,/<\/IfModule>/s/^/#/' /etc/apache2/mods-available/mpm.conf
 
-# Copy app into container
 COPY vitalis/ /var/www/html/
 
-# Set working directory
 WORKDIR /var/www/html
 
-# Expose port
 EXPOSE 80
 
 CMD ["apache2-foreground"]
-
