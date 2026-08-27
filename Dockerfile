@@ -7,7 +7,7 @@ RUN docker-php-ext-install mysqli
 RUN a2enmod rewrite
 
 # Copy app into container
-COPY . /var/www/html
+COPY vitalis/ /var/www/html/
 
 # Set working directory
 WORKDIR /var/www/html
